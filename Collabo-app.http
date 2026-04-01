@@ -1,0 +1,6 @@
+@Collabo_app_HostAddress = http://localhost:5092
+
+GET {{Collabo_app_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
