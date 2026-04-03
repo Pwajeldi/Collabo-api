@@ -1,7 +1,6 @@
 ﻿using Collabo_app.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 
 namespace Collabo_app.Database
 {
@@ -11,5 +10,6 @@ namespace Collabo_app.Database
         {
         }
         public DbSet<ApplicationUser> AppUsers { get; set; }
+        public DbSet<RefreshTokens> RefreshTokensTab { get; set; }
     }
 }
