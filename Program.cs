@@ -1,4 +1,5 @@
 using Collabo_app.Database;
+using Collabo_app.Hubs;
 using Collabo_app.Models;
 using Collabo_app.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -41,8 +42,33 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? throw new Exception("Missing Jwt key"))
         )
     };
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context => {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if(!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/ChatHub"))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
 builder.Services.AddAuthorization();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("react",policy =>
+    {
+        policy  .WithOrigins("http://localhost:5173")      // React app URL
+               .AllowAnyHeader()
+               .AllowAnyMethod()
+               .AllowCredentials()
+        .SetIsOriginAllowed(_ => true);
+    });
+});
+
+builder.Services.AddSignalR();
 
 // CUSTOM SERVICES
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -56,7 +82,11 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+app.UseCors("react");
+
 await app.SeedDataAsync();
+
+app.MapHub<ChatHub>("/chatHub");
 
 app.UseHttpsRedirection();
 

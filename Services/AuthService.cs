@@ -84,6 +84,7 @@ namespace Collabo_app.Services
             };
             await _context.RefreshTokensTab.AddAsync(Newrefresh);
             await _context.SaveChangesAsync();
+            _logger.LogInformation("New Registration: {email}", user.Email);
             return new LoginResponseDto
             {
                 AccessToken = accessToken,
