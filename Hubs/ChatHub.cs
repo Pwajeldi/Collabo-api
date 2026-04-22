@@ -6,7 +6,7 @@ namespace Collabo_app.Hubs
     public class ChatHub : Hub<IChatHub>
     {
         // Send message to all clients
-        [Authorize]
+        //[Authorize]
         public async Task SendMessage(string user, string message)
         {
             await Clients.All.ReceiveMessage(user, message);
